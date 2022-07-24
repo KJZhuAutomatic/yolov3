@@ -1,0 +1,25 @@
+set detect.py as the entrancy of reviewing, because dataset is not necessary.
+
+models.yolo,Model.__init__:
+1.model cfg is in *.yaml, and it's supposed to call ``check_yaml`` before using it.
+2.call ``print_args`` and ``select_device`` 
+3.call ``parse_model``
+	adventage:
+		can gain the width and depth of layers
+		print the archieve as
+4.check_anchor_order, initialize_weight, initialize_biases may be important
+5.print info of model layers, num_params and FLOPs
+
+tips:
+	attribute of Path(f): suffix, parent(s), resolve, stem
+	
+	when run as entrance, such as python path/to/file
+		__name__ == '__main__', __file__ == path/to/file
+	when import as a module
+		__name__ == 'pkg.[subpkg.]module', __file__ == global path of path/to/file 
+
+
+check_file in utils.general:
+	call ``check_suffix`` first
+	if input is a file, return the file(str)
+	if input is a url

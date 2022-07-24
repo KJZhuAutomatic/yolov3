@@ -11,8 +11,9 @@ import sys
 from copy import deepcopy
 from pathlib import Path
 
-FILE = Path(__file__).resolve()
-ROOT = FILE.parents[1]  # root directory
+# breakpoint() # review attribute of Path 
+FILE = Path(__file__).resolve() # 'models/yolo.py' -> PosixPath('/home/zkj/machine learning/yolo/yolov3/models/yolo.py')
+ROOT = FILE.parents[1]  # root directory 2 layers above path
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 # ROOT = ROOT.relative_to(Path.cwd())  # relative
@@ -155,6 +156,13 @@ class Model(nn.Module):
 
     def _descale_pred(self, p, flips, scale, img_size):
         # de-scale predictions following augmented inference (inverse operation)
+        '''
+        params:
+        p: prediction tensor shape [bs, num_anchors, num_output(5+80)]
+        flips: None or 2(up-down flip), 3(left-right flip)
+        scales: float small or equal than 1.0
+        img_size: [height, width] original image size
+        '''
         if self.inplace:
             p[..., :4] /= scale  # de-scale
             if flips == 2:
@@ -172,6 +180,8 @@ class Model(nn.Module):
 
     def _clip_augmented(self, y):
         # Clip  augmented inference tails
+        # y: List[Tensor[bs, num_anchors, num_out]]
+        breakpoint()
         nl = self.model[-1].nl  # number of detection layers (P3-P5)
         g = sum(4 ** x for x in range(nl))  # grid points
         e = 1  # exclude layer count
@@ -319,7 +329,8 @@ if __name__ == '__main__':
     # Profile
     if opt.profile:
         img = torch.rand(8 if torch.cuda.is_available() else 1, 3, 640, 640).to(device)
-        y = model(img, profile=True)
+        model.eval()
+        y = model(img, augment=True)
 
     # Test all models
     if opt.test:
